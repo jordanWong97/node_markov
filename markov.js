@@ -1,7 +1,6 @@
 'use strict';
 /** Textual markov chain generator. */
 
-const fsP = require('fs/promises');
 class MarkovMachine {
 
   /** Build markov machine; read in text.*/
@@ -34,19 +33,24 @@ class MarkovMachine {
     //loop over words
     //create obj, assign words as keys and set value equal to word after
     const words = this.words;
-    let chains = {};
+    let chains = new Map();
     //let words = this.words;
     for (let i = 0; i < words.length; i++) {
       //obj
-      if (i === words.length - 1) {
-        chains[words[i]] ? chains[words[i]].push(null) : chains[words[i]] = [null];
-        //chains[words[i]]
-      }
-      else if (chains[words[i]]) {
-        chains[words[i]].push(words[i + 1]);
+      // if (i === words.length - 1) {
+      //   if (chains.has(words[i])) {
+      //     chains.get(words[i]).push(null);
+      //   } else {
+      //     chains.set(words[i], [null]);
+      //   }
+      // }
+      let word = words[i];
+      let nextWord = words[i + 1] || null;
+      if (chains.has(word)) {
+        chains.get(word).push(nextWord);
       }
       else {
-        chains[words[i]] = [words[i + 1]];
+        chains.set(word, [nextWord]);
       }
     }
     return chains;
@@ -62,52 +66,25 @@ class MarkovMachine {
     // - find a random word from the following-words of that
     // - repeat until reaching the terminal null
     let start = this.words[0];
-    let nextWord = random(this.chains[start]);
+    let nextWord = random(this.chains.get(start));
     let output = start;
     // nextword init second word, call random and pass in aray with start word
     // set this.chain
     while (nextWord) {
       output += (' ' + nextWord);
-      nextWord = random(this.chains[nextWord]);
+      nextWord = random(this.chains.get(nextWord));
     }
     return output;
   }
 }
-
-let contents;
 
 function random(arr) {
   let random = Math.floor(Math.random() * arr.length);
   return arr[random];
 }
 
-/** Accepts a file path and prints the contents. */
-async function reader(path) {
-  try {
-    contents = await fsP.readFile(path, "utf8");
-  } catch (err) {
-    console.error(err);
-    process.exit(1);
-  }
+
+module.exports = {
+  MarkovMachine
 }
-
-const argv = process.argv;
-reader(argv[2]);
-
-
-//test getchains
-//return an obj toequal:
-// {
-//   *   "The": ["cat"],
-//   *   "cat": ["in"],
-//   *   "in": ["the"],
-//   *   "the": ["hat."],
-//   *   "hat.": [null],
-//   *  }
-
-//test gettext
-
-
-//test
-
 

@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/jordanWong97/node_markov/issues"
   },
-  "homepage": "https://github.com/jordanWong97/node_markov#readme"
+  "homepage": "https://github.com/jordanWong97/node_markov#readme",
+  "dependencies": {
+    "axios": "^0.27.2"
+  }
 }
